@@ -1,10 +1,15 @@
 apply plugin: 'java'
+
 sourceSets {
     main {
         java {
             srcDir 'src'
         }
     }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
 }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
