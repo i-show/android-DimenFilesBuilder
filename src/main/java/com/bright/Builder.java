@@ -100,8 +100,8 @@ public class Builder {
     private void generateXmlFile(int nowDensity) {
 
         StringBuilder target = new StringBuilder();
-        target.append(Configure.COPY_RIGHT);
         target.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+        target.append(Configure.COPY_RIGHT);
         target.append("<resources>\n");
         float scale = nowDensity * 1.00f / STANDARD_DENSITY;
 
@@ -120,11 +120,12 @@ public class Builder {
         }
         target.append("</resources>");
 
-
+        // 创建values-sw**dp 的文件夹
         File fileDir = new File(TAGGET_PATH + File.separator + VALUE_TEMPLATE.replace("{0}", nowDensity + ""));
         fileDir.mkdir();
-
+        // 生成dimen.xml文件
         File targetFile = new File(fileDir.getAbsolutePath(), "dimen.xml");
+        // 写入文件
         try {
             PrintWriter pw = new PrintWriter(new FileOutputStream(targetFile));
             pw.print(target.toString());
