@@ -1,3 +1,19 @@
+/**
+ * Copyright (C) 2015 The yuhaiyang Android Source Project
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.bright;
 
 import java.io.File;
@@ -12,11 +28,13 @@ import java.text.DecimalFormat;
  */
 public class Builder {
     /**
-     * 要产生多少组数据
+     * 要产生多少组数据 1 - 500
      */
     private static final int TAGGET_COUNT = 500;
     /**
-     * 标准分辨率 按照360 为最基础的 来进行适配
+     * 标准分辨率 按照360 为最基础的
+     * 即：values-sw360dp 下面dimen.xml 是 1 - 500 一直是相等的
+     * 其他的文件按照比率（计算）来修改
      */
     private static final float STANDARD_DENSITY = 360f;
     /**
@@ -31,7 +49,7 @@ public class Builder {
      * 每一个分辨率对应的文件夹
      * 忍不住的的废话：
      * 1. 获取 sw对应的值 Configuration.smallestScreenWidthDp
-     * 这个值是一个奇葩的值 例如在N6上是411 ，Sony S36H 输入miui7 居然是 392
+     * 这个值是一个奇葩的值 例如在N6上是411 ，Sony S36H 刷入miui7 居然是 392， N4 居然是384
      */
     private final static String VALUE_TEMPLATE = "values-sw{0}dp";
 
@@ -53,34 +71,49 @@ public class Builder {
 
 
     public Builder() {
-
+        //  创建文件夹
         File dir = new File(TAGGET_PATH);
-        if (! dir.exists()) {
+        if (!dir.exists()) {
             dir.mkdirs();
         }
+
         System.out.println(dir.getAbsoluteFile());
 
     }
 
+    /**
+     * 生成文件
+     */
     public void generate() {
+        /**
+         * 循环生成目录
+         */
         for (int width : SUPPORT_DIMESION) {
             generateXmlFile(width);
         }
 
     }
 
+    /**
+     * 开始生成XML
+     */
     private void generateXmlFile(int nowDensity) {
 
         StringBuilder target = new StringBuilder();
+        target.append(Configure.COPY_RIGHT);
         target.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
         target.append("<resources>\n");
         float scale = nowDensity * 1.00f / STANDARD_DENSITY;
 
         System.out.println("width : " + nowDensity + ", scale = " + scale);
         for (int i = 1; i <= TAGGET_COUNT; i++) {
-            // <dimen name="dp_{0}">{1}dp</dimen>
-            DecimalFormat decimalFormat = new DecimalFormat("0.00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+            // 方法进行保留2位小数来算
+            DecimalFormat decimalFormat = new DecimalFormat("0.00");
             String result = decimalFormat.format(i * scale);
+            /**
+             *  模版：<dimen name="dp_{0}">{1}dp</dimen>
+             *  例子：<dimen name="dp_100">100dp</dimen>
+             */
             target.append(TEMPLATE
                     .replace("{0}", String.valueOf(i))
                     .replace("{1}", result));
@@ -99,23 +132,6 @@ public class Builder {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-
-    /**
-     * 提供精确的小数位四舍五入处理。
-     *
-     * @param v     需要四舍五入的数字
-     * @param scale 小数点后保留几位
-     * @return 四舍五入后的结果
-     */
-    public static double round(double v, int scale) {
-        if (scale < 0) {
-            throw new IllegalArgumentException("The scale must be a positive integer or zero");
-        }
-        BigDecimal b = new BigDecimal(Double.toString(v));
-        BigDecimal one = new BigDecimal("1");
-        return b.divide(one, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
 }
