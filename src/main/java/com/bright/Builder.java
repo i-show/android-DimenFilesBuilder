@@ -16,9 +16,9 @@ public class Builder {
      */
     private static final int TAGGET_COUNT = 500;
     /**
-     * 标准分辨率
+     * 标准分辨率 按照360 为最基础的 来进行适配
      */
-    private static final float STANDARD_DENSITY = 480f;
+    private static final float STANDARD_DENSITY = 360f;
     /**
      * 生成文件夹的名字
      */
